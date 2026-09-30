@@ -23,10 +23,11 @@ def generate_launch_description():
     )
 
     # Nodo 2: GUI para mover las articulaciones con sliders
-    node_joint_state_publisher_gui = Node(
-        package='joint_state_publisher_gui',
-        executable='joint_state_publisher_gui',
-        name='joint_state_publisher_gui'
+    node_scara_state_publisher = Node(
+        package='scara_robot',
+        executable='state_publisher',
+        name='state_publisher',
+        output='screen'
     )
 
     # Nodo 3: RViz2
@@ -40,6 +41,6 @@ def generate_launch_description():
 
     return LaunchDescription([
         node_robot_state_publisher,
-        node_joint_state_publisher_gui,
+        node_scara_state_publisher,
         node_rviz
     ])

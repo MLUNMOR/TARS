@@ -6,6 +6,12 @@
     <xacro:property name="base_height" value="0.25"/>
     <xacro:property name="arm1_length" value="0.4"/>
     <xacro:property name="arm2_length" value="0.3"/>
+    <xacro:property name="base_weight" value="6.0"/>
+    <xacro:property name="arm1_weight" value="2.7"/>
+    <xacro:property name="arm2_weight" value="1.7"/>
+    <xacro:property name="prismatic_weight" value="1.2"/>
+    <xacro:property name="gripper_base_weight" value="0.2"/>
+    <xacro:property name="finger_weight" value="0.05"/>
 
     <!-- ================= MATERIALES ================= -->
     <material name="dark_grey">
@@ -37,10 +43,20 @@
             <origin xyz="0 0 ${base_height/2}" rpy="0 0 0" />
             <material name="dark_grey" />
         </visual>
+        <collision>
+            <geometry>
+                <cylinder radius="${link_radius}" length="${base_height}" />
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="${base_weight}"/>
+            <inertia ixx="1e-3" ixy="0.0" ixz="0.0" iyy="1e-3" iyz="0.0" izz="1e-3"/>
+        </inertial>
+
     </link>
 
     <!-- ================= MACRO PARA BRAZOS ================= -->
-    <xacro:macro name="scara_arm" params="prefix parent length color_name *origin">
+    <xacro:macro name="scara_arm" params="prefix parent length weight color_name *origin">
         
         <!-- Articulación de rotación (Eje Z) -->
         <joint name="${prefix}_joint" type="revolute">
@@ -61,18 +77,27 @@
                 <origin xyz="${length/2} 0 0" rpy="0 0 0" />
                 <material name="${color_name}" />
             </visual>
+            <collision>
+                <geometry>
+                    <box size="${length} 0.08 0.08" />
+                </geometry>
+            </collision>
+            <inertial>
+                <mass value="${weight}"/>
+                <inertia ixx="1e-3" ixy="0.0" ixz="0.0" iyy="1e-3" iyz="0.0" izz="1e-3"/>
+            </inertial>
         </link>
 
     </xacro:macro>
 
     <!-- ================= INSTANCIAS DE LOS BRAZOS ================= -->
     <!-- Primer Brazo (Naranja) -->
-    <xacro:scara_arm prefix="arm1" parent="base_link" length="${arm1_length}" color_name="orange">
+    <xacro:scara_arm prefix="arm1" parent="base_link" length="${arm1_length}" weight="${arm1_weight}" color_name="orange">
         <origin xyz="0 0 ${base_height - 0.04}" rpy="0 0 0" />
     </xacro:scara_arm>
 
     <!-- Segundo Brazo (Azul, conectado al final del primero) -->
-    <xacro:scara_arm prefix="arm2" parent="arm1_link" length="${arm2_length}" color_name="blue">
+    <xacro:scara_arm prefix="arm2" parent="arm1_link" length="${arm2_length}" weight="${arm2_weight}" color_name="blue">
         <origin xyz="${arm1_length} 0 0.08" rpy="0 0 0" />
     </xacro:scara_arm>
 
@@ -95,6 +120,15 @@
             <origin xyz="0 0 0" rpy="0 0 0" />
             <material name="dark_grey" />
         </visual>
+        <collision>
+            <geometry>
+                <cylinder radius="0.02" length="0.3" />
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="${prismatic_weight}"/>
+            <inertia ixx="1e-3" ixy="0.0" ixz="0.0" iyy="1e-3" iyz="0.0" izz="1e-3"/>
+        </inertial>
     </link>
 
     <!-- ================= BASE DEL GRIPPER ================= -->
@@ -112,6 +146,15 @@
             <origin xyz="0 0 0" rpy="0 0 0" />
             <material name="dark_grey" />
         </visual>
+        <collision>
+            <geometry>
+                <box size="0.04 0.12 0.02" />
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="${gripper_base_weight}"/>
+            <inertia ixx="1e-3" ixy="0.0" ixz="0.0" iyy="1e-3" iyz="0.0" izz="1e-3"/>
+        </inertial>
     </link>
 
     <!-- ================= MACRO Y DEDOS DEL GRIPPER ================= -->
@@ -132,6 +175,15 @@
                 <origin xyz="0 0 0" rpy="0 0 0" />
                 <material name="orange" />
             </visual>
+            <collision>
+                <geometry>
+                    <box size="0.02 0.01 0.04" />
+                </geometry>
+            </collision>
+            <inertial>
+                <mass value="${finger_weight}"/>
+                <inertia ixx="1e-3" ixy="0.0" ixz="0.0" iyy="1e-3" iyz="0.0" izz="1e-3"/>
+            </inertial>
         </link>
     </xacro:macro>
 
